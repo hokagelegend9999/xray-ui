@@ -15,6 +15,10 @@ Panel Xray yang mendukung multi-protokol dan multi-user
 - Lebih banyak pengaturan lanjutan (lihat panel)
 
 # Instalasi & Upgrade
+1.
+```
+apt update && apt install -y curl
+```
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/hokagelegend9999/xray-ui/refs/heads/main/install.sh)
