@@ -1,34 +1,33 @@
-x-ui
-Panel xray yang mendukung multi-protokol dan multi-pengguna
+# x-ui
 
-Fitur
-Monitoring status sistem
+Panel Xray yang mendukung multi-protokol dan multi-user
 
-Dukungan multi-pengguna dan multi-protokol, operasi visual melalui web
+# Fitur
 
-Protokol yang didukung: vmess, vless, trojan, shadowsocks, dokodemo-door, socks, http
+- Monitoring status sistem
+- Dukungan multi-user multi-protokol, operasi visual berbasis web
+- Protokol yang didukung: vmess、vless、trojan、shadowsocks、dokodemo-door、socks、http
+- Dukungan konfigurasi transport tambahan
+- Statistik traffic, limit traffic, limit waktu kedaluwarsa
+- Template konfigurasi Xray yang bisa dikustom
+- Dukungan akses panel via HTTPS (butuh domain + sertifikat SSL)
+- Dukungan pembuatan sertifikat SSL satu klik + auto-renew
+- Lebih banyak pengaturan lanjutan (lihat panel)
 
-Dukungan konfigurasi transportasi tambahan
+# Instalasi & Upgrade
 
-Statistik lalu lintas, pembatasan kuota, pembatasan masa berlaku
-
-Dapat menyesuaikan template konfigurasi xray
-
-Dukungan akses panel via https (domain sendiri + sertifikat SSL)
-
-Dukungan penerbitan sertifikat SSL satu klik dengan perpanjangan otomatis
-
-Lebih banyak opsi konfigurasi lanjutan, lihat panel
-
-Instalasi & Pembaruan
+```
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-Instalasi & Pembaruan Manual
-Pertama unduh paket terbaru dari https://github.com/vaxilu/x-ui/releases, biasanya pilih arsitektur amd64
+```
 
-Kemudian unggah paket ini ke direktori /root/ server dan login ke server sebagai pengguna root
+## Instalasi & Upgrade Manual
 
-Jika arsitektur CPU server Anda bukan amd64, ganti amd64 dalam perintah dengan arsitektur lain secara manual
+1. Pertama unduh arsip terbaru dari https://github.com/vaxilu/x-ui/releases, biasanya pilih arsitektur `amd64`
+2. Unggah arsip ke direktori `/root/` di server dan login sebagai user `root`
 
+> Jika arsitektur CPU server Anda bukan `amd64`, ganti `amd64` dengan arsitektur lain
+
+```
 cd /root/
 rm x-ui/ /usr/local/x-ui/ /usr/bin/x-ui -rf
 tar zxvf x-ui-linux-amd64.tar.gz
@@ -39,106 +38,97 @@ mv x-ui/ /usr/local/
 systemctl daemon-reload
 systemctl enable x-ui
 systemctl restart x-ui
-Instalasi dengan Docker
-Tutorial docker dan image docker ini disediakan oleh Chasing66
+```
 
-Instal docker
+## Instalasi Menggunakan Docker
 
-shell
+> Tutorial docker dan image disediakan oleh [Chasing66](https://github.com/Chasing66)
+
+1. Install docker
+
+```shell
 curl -fsSL https://get.docker.com | sh
-Instal x-ui
+```
 
-shell
+2. Install x-ui
+
+```shell
 mkdir x-ui && cd x-ui
 docker run -itd --network=host \
     -v $PWD/db/:/etc/x-ui/ \
     -v $PWD/cert/:/root/cert/ \
     --name x-ui --restart=unless-stopped \
     enwaiax/x-ui:latest
-Build image sendiri
+```
 
-shell
+> Build image sendiri
+
+```shell
 docker build -t x-ui .
-Penerbitan Sertifikat SSL
-Fitur dan tutorial ini disediakan oleh FranzKafkaYu
+```
 
-Skrip ini memiliki fungsi penerbitan sertifikat SSL bawaan. Untuk menggunakan skrip ini dalam menerbitkan sertifikat, diperlukan persyaratan berikut:
+## Aplikasi Sertifikat SSL
 
-Mengetahui email registrasi Cloudflare
+> Fitur ini disediakan oleh [FranzKafkaYu](https://github.com/FranzKafkaYu)
 
-Mengetahui Cloudflare Global API Key
+Persyaratan:
+- Email registrasi Cloudflare
+- Cloudflare Global API Key
+- Domain sudah diarahkan ke server via Cloudflare
 
-Domain sudah diarahkan melalui Cloudflare ke server saat ini
+Cara mendapatkan Global API Key:
+![](media/bda84fbc2ede834deaba1c173a932223.png)
+![](media/d13ffd6a73f938d1037d0708e31433bf.png)
 
-Cara mendapatkan Cloudflare Global API Key:
-
-
-
-Saat menggunakan cukup masukkan domain, email, API KEY, ilustrasi sebagai berikut:
-
+Contoh penggunaan:
+![](media/2022-04-04_141259.png)
 
 Catatan:
+- Menggunakan DNS API
+- Default CA: Let'sEncrypt
+- Lokasi sertifikat: /root/cert
+- Menerbitkan sertifikat wildcard
 
-Skrip ini menggunakan DNS API untuk penerbitan sertifikat
+## Penggunaan Bot Telegram (Dalam pengembangan)
 
-Secara default menggunakan Let'sEncrypt sebagai CA
+> Fitur ini disediakan oleh [FranzKafkaYu](https://github.com/FranzKafkaYu)
 
-Direktori instalasi sertifikat adalah /root/cert
+Fitur:
+- Notifikasi traffic harian
+- Peringatan login panel
+- dll
 
-Sertifikat yang diterbitkan oleh skrip ini adalah sertifikat wildcard
+Pengaturan:
+- Token bot
+- Chat ID
+- Jadwal notifikasi (format crontab)
 
-Penggunaan Bot Telegram (Dalam pengembangan, belum dapat digunakan)
-Fitur dan tutorial ini disediakan oleh FranzKafkaYu
+Contoh:
+- 30 * * * * * //Notifikasi di detik ke-30
+- @hourly      //Setiap jam
+- @daily       //Setiap hari
+- @every 8h    //Setiap 8 jam
 
-X-UI mendukung notifikasi lalu lintas harian, peringatan login panel dan fungsi lainnya melalui bot Telegram. Untuk menggunakan bot Telegram, Anda perlu mendaftar sendiri.
-Tutorial pendaftaran spesifik dapat merujuk tautan blog
-Petunjuk penggunaan: Atur parameter terkait bot di latar belakang panel, termasuk:
+## Sistem yang Disarankan
 
-Token bot Telegram
+- CentOS 7+
+- Ubuntu 16+
+- Debian 8+
 
-ChatId bot Telegram
+# FAQ
 
-Waktu operasi periodik bot Telegram, menggunakan sintaks crontab
+## Migrasi dari v2-ui
 
-Referensi sintaks:
-
-30 * * * * * //Notifikasi setiap menit ke-30
-
-@hourly //Notifikasi setiap jam
-
-@daily //Notifikasi setiap hari (tepat tengah malam)
-
-@every 8h //Notifikasi setiap 8 jam
-
-Konten notifikasi TG:
-
-Penggunaan lalu lintas node
-
-Peringatan login panel
-
-Peringatan kedaluwarsa node
-
-Peringatan peringatan lalu lintas
-
-Lebih banyak fitur dalam perencanaan...
-
-Sistem yang Disarankan
-CentOS 7+
-
-Ubuntu 16+
-
-Debian 8+
-
-Pertanyaan Umum
-Migrasi dari v2-ui
-Pertama instal versi terbaru x-ui di server yang telah menginstal v2-ui, kemudian gunakan perintah berikut untuk migrasi, yang akan memigrasi semua data akun inbound v2-ui ke x-ui, pengaturan panel dan username password tidak akan dimigrasi
-
-Setelah migrasi berhasil, harap matikan v2-ui dan restart x-ui, jika tidak inbound v2-ui akan bertabrakan port dengan inbound x-ui
-
+```
 x-ui v2-ui
-Penutupan Issue
-Berbagai pertanyaan pemula yang membuat tekanan darah tinggi
+```
 
-Stargazers over time
-Stargazers over time
+> Setelah migrasi, stop v2-ui dan restart x-ui
 
+## Penutupan Issue
+
+Pertanyaan dasar tidak akan ditanggapi
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/vaxilu/x-ui.svg)](https://starchart.cc/vaxilu/x-ui)
