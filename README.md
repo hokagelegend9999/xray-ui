@@ -1,33 +1,34 @@
-# x-ui
+x-ui
+Panel xray yang mendukung multi-protokol dan multi-pengguna
 
-支持多协议多用户的 xray 面板
+Fitur
+Monitoring status sistem
 
-# 功能介绍
+Dukungan multi-pengguna dan multi-protokol, operasi visual melalui web
 
-- 系统状态监控
-- 支持多用户多协议，网页可视化操作
-- 支持的协议：vmess、vless、trojan、shadowsocks、dokodemo-door、socks、http
-- 支持配置更多传输配置
-- 流量统计，限制流量，限制到期时间
-- 可自定义 xray 配置模板
-- 支持 https 访问面板（自备域名 + ssl 证书）
-- 支持一键SSL证书申请且自动续签
-- 更多高级配置项，详见面板
+Protokol yang didukung: vmess, vless, trojan, shadowsocks, dokodemo-door, socks, http
 
-# 安装&升级
+Dukungan konfigurasi transportasi tambahan
 
-```
+Statistik lalu lintas, pembatasan kuota, pembatasan masa berlaku
+
+Dapat menyesuaikan template konfigurasi xray
+
+Dukungan akses panel via https (domain sendiri + sertifikat SSL)
+
+Dukungan penerbitan sertifikat SSL satu klik dengan perpanjangan otomatis
+
+Lebih banyak opsi konfigurasi lanjutan, lihat panel
+
+Instalasi & Pembaruan
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-```
+Instalasi & Pembaruan Manual
+Pertama unduh paket terbaru dari https://github.com/vaxilu/x-ui/releases, biasanya pilih arsitektur amd64
 
-## 手动安装&升级
+Kemudian unggah paket ini ke direktori /root/ server dan login ke server sebagai pengguna root
 
-1. 首先从 https://github.com/vaxilu/x-ui/releases 下载最新的压缩包，一般选择 `amd64`架构
-2. 然后将这个压缩包上传到服务器的 `/root/`目录下，并使用 `root`用户登录服务器
+Jika arsitektur CPU server Anda bukan amd64, ganti amd64 dalam perintah dengan arsitektur lain secara manual
 
-> 如果你的服务器 cpu 架构不是 `amd64`，自行将命令中的 `amd64`替换为其他架构
-
-```
 cd /root/
 rm x-ui/ /usr/local/x-ui/ /usr/bin/x-ui -rf
 tar zxvf x-ui-linux-amd64.tar.gz
@@ -38,106 +39,106 @@ mv x-ui/ /usr/local/
 systemctl daemon-reload
 systemctl enable x-ui
 systemctl restart x-ui
-```
+Instalasi dengan Docker
+Tutorial docker dan image docker ini disediakan oleh Chasing66
 
-## 使用docker安装
+Instal docker
 
-> 此 docker 教程与 docker 镜像由[Chasing66](https://github.com/Chasing66)提供
-
-1. 安装docker
-
-```shell
+shell
 curl -fsSL https://get.docker.com | sh
-```
+Instal x-ui
 
-2. 安装x-ui
-
-```shell
+shell
 mkdir x-ui && cd x-ui
 docker run -itd --network=host \
     -v $PWD/db/:/etc/x-ui/ \
     -v $PWD/cert/:/root/cert/ \
     --name x-ui --restart=unless-stopped \
     enwaiax/x-ui:latest
-```
+Build image sendiri
 
-> Build 自己的镜像
-
-```shell
+shell
 docker build -t x-ui .
-```
+Penerbitan Sertifikat SSL
+Fitur dan tutorial ini disediakan oleh FranzKafkaYu
 
-## SSL证书申请
+Skrip ini memiliki fungsi penerbitan sertifikat SSL bawaan. Untuk menggunakan skrip ini dalam menerbitkan sertifikat, diperlukan persyaratan berikut:
 
-> 此功能与教程由[FranzKafkaYu](https://github.com/FranzKafkaYu)提供
+Mengetahui email registrasi Cloudflare
 
-脚本内置SSL证书申请功能，使用该脚本申请证书，需满足以下条件:
+Mengetahui Cloudflare Global API Key
 
-- 知晓Cloudflare 注册邮箱
-- 知晓Cloudflare Global API Key
-- 域名已通过cloudflare进行解析到当前服务器
+Domain sudah diarahkan melalui Cloudflare ke server saat ini
 
-获取Cloudflare Global API Key的方法:
-    ![](media/bda84fbc2ede834deaba1c173a932223.png)
-    ![](media/d13ffd6a73f938d1037d0708e31433bf.png)
+Cara mendapatkan Cloudflare Global API Key:
 
-使用时只需输入 `域名`, `邮箱`, `API KEY`即可，示意图如下：
-        ![](media/2022-04-04_141259.png)
 
-注意事项:
 
-- 该脚本使用DNS API进行证书申请
-- 默认使用Let'sEncrypt作为CA方
-- 证书安装目录为/root/cert目录
-- 本脚本申请证书均为泛域名证书
+Saat menggunakan cukup masukkan domain, email, API KEY, ilustrasi sebagai berikut:
 
-## Tg机器人使用（开发中，暂不可使用）
 
-> 此功能与教程由[FranzKafkaYu](https://github.com/FranzKafkaYu)提供
+Catatan:
 
-X-UI支持通过Tg机器人实现每日流量通知，面板登录提醒等功能，使用Tg机器人，需要自行申请
-具体申请教程可以参考[博客链接](https://coderfan.net/how-to-use-telegram-bot-to-alarm-you-when-someone-login-into-your-vps.html)
-使用说明:在面板后台设置机器人相关参数，具体包括
+Skrip ini menggunakan DNS API untuk penerbitan sertifikat
 
-- Tg机器人Token
-- Tg机器人ChatId
-- Tg机器人周期运行时间，采用crontab语法  
+Secara default menggunakan Let'sEncrypt sebagai CA
 
-参考语法：
-- 30 * * * * * //每一分的第30s进行通知
-- @hourly      //每小时通知
-- @daily       //每天通知（凌晨零点整）
-- @every 8h    //每8小时通知  
+Direktori instalasi sertifikat adalah /root/cert
 
-TG通知内容：
-- 节点流量使用
-- 面板登录提醒
-- 节点到期提醒
-- 流量预警提醒  
+Sertifikat yang diterbitkan oleh skrip ini adalah sertifikat wildcard
 
-更多功能规划中...
-## 建议系统
+Penggunaan Bot Telegram (Dalam pengembangan, belum dapat digunakan)
+Fitur dan tutorial ini disediakan oleh FranzKafkaYu
 
-- CentOS 7+
-- Ubuntu 16+
-- Debian 8+
+X-UI mendukung notifikasi lalu lintas harian, peringatan login panel dan fungsi lainnya melalui bot Telegram. Untuk menggunakan bot Telegram, Anda perlu mendaftar sendiri.
+Tutorial pendaftaran spesifik dapat merujuk tautan blog
+Petunjuk penggunaan: Atur parameter terkait bot di latar belakang panel, termasuk:
 
-# 常见问题
+Token bot Telegram
 
-## 从 v2-ui 迁移
+ChatId bot Telegram
 
-首先在安装了 v2-ui 的服务器上安装最新版 x-ui，然后使用以下命令进行迁移，将迁移本机 v2-ui 的 `所有 inbound 账号数据`至 x-ui，`面板设置和用户名密码不会迁移`
+Waktu operasi periodik bot Telegram, menggunakan sintaks crontab
 
-> 迁移成功后请 `关闭 v2-ui`并且 `重启 x-ui`，否则 v2-ui 的 inbound 会与 x-ui 的 inbound 会产生 `端口冲突`
+Referensi sintaks:
 
-```
+30 * * * * * //Notifikasi setiap menit ke-30
+
+@hourly //Notifikasi setiap jam
+
+@daily //Notifikasi setiap hari (tepat tengah malam)
+
+@every 8h //Notifikasi setiap 8 jam
+
+Konten notifikasi TG:
+
+Penggunaan lalu lintas node
+
+Peringatan login panel
+
+Peringatan kedaluwarsa node
+
+Peringatan peringatan lalu lintas
+
+Lebih banyak fitur dalam perencanaan...
+
+Sistem yang Disarankan
+CentOS 7+
+
+Ubuntu 16+
+
+Debian 8+
+
+Pertanyaan Umum
+Migrasi dari v2-ui
+Pertama instal versi terbaru x-ui di server yang telah menginstal v2-ui, kemudian gunakan perintah berikut untuk migrasi, yang akan memigrasi semua data akun inbound v2-ui ke x-ui, pengaturan panel dan username password tidak akan dimigrasi
+
+Setelah migrasi berhasil, harap matikan v2-ui dan restart x-ui, jika tidak inbound v2-ui akan bertabrakan port dengan inbound x-ui
+
 x-ui v2-ui
-```
+Penutupan Issue
+Berbagai pertanyaan pemula yang membuat tekanan darah tinggi
 
-## issue 关闭
+Stargazers over time
+Stargazers over time
 
-各种小白问题看得血压很高
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/vaxilu/x-ui.svg)](https://starchart.cc/vaxilu/x-ui)
