@@ -17,7 +17,7 @@ Panel Xray yang mendukung multi-protokol dan multi-user
 # Instalasi & Upgrade
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/hokagelegend9999/xray-ui/refs/heads/main/install.sh)
 ```
 
 ## Instalasi & Upgrade Manual
