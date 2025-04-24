@@ -1,7 +1,7 @@
 # xray-ui
 
 
-bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/hokagelegend9999/xray-ui/refs/heads/main/install.sh)
 
 
 Run the X-UI Install Script
