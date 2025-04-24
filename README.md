@@ -1,139 +1,143 @@
-# xray-ui
+# x-ui
 
+支持多协议多用户的 xray 面板
 
-bash <(curl -Ls https://raw.githubusercontent.com/hokagelegend9999/xray-ui/refs/heads/main/install.sh)
+# 功能介绍
 
+- 系统状态监控
+- 支持多用户多协议，网页可视化操作
+- 支持的协议：vmess、vless、trojan、shadowsocks、dokodemo-door、socks、http
+- 支持配置更多传输配置
+- 流量统计，限制流量，限制到期时间
+- 可自定义 xray 配置模板
+- 支持 https 访问面板（自备域名 + ssl 证书）
+- 支持一键SSL证书申请且自动续签
+- 更多高级配置项，详见面板
 
-Run the X-UI Install Script
-Download and run the one-click install script provided by the developer:
+# 安装&升级
 
+```
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-Common Panel Commands
-From the command line, you can control the server with various commands:
+```
 
-Command	Effect
-x-ui	Display the management menu
-x-ui start	Start the X-UI panel
-x-ui stop	Stop the X-UI panel
-x-ui restart	Restart the X-UI panel
-x-ui status	View X-UI status
-x-ui enable	Set X-UI to start automatically after boot
-x-ui disable	Cancel X-UI boot from start
-x-ui log	View X-UI log
-x-ui update	Update the X-UI panel
-x-ui install	Install X-UI panel
-x-ui uninstall	Uninstall X-UI panel
-First Time Login
-You can get to the X-UI panel on your PC by opening a browser and typing your server IP address and port 54321. For example:
+## 手动安装&升级
 
-http://123.45.67.89:54321
-By default, the login user name is admin, and the password is also admin.
+1. 首先从 https://github.com/vaxilu/x-ui/releases 下载最新的压缩包，一般选择 `amd64`架构
+2. 然后将这个压缩包上传到服务器的 `/root/`目录下，并使用 `root`用户登录服务器
 
-First-time login to X-UI panel
+> 如果你的服务器 cpu 架构不是 `amd64`，自行将命令中的 `amd64`替换为其他架构
 
-Side Menu
-After you have logged in, the side menu offers these options:
+```
+cd /root/
+rm x-ui/ /usr/local/x-ui/ /usr/bin/x-ui -rf
+tar zxvf x-ui-linux-amd64.tar.gz
+chmod +x x-ui/x-ui x-ui/bin/xray-linux-* x-ui/x-ui.sh
+cp x-ui/x-ui.sh /usr/bin/x-ui
+cp -f x-ui/x-ui.service /etc/systemd/system/
+mv x-ui/ /usr/local/
+systemctl daemon-reload
+systemctl enable x-ui
+systemctl restart x-ui
+```
 
-Chinese	English
-系统状态	System status
-入站列表	Inbound list
-面板设置	Panel settings
-其他	Other
-退出登录	Sign out
-Side menu on X-UI panel
+## 使用docker安装
 
-Enable HTTPS on Panel
-You will notice that, at first, you used plain text HTTP to reach the panel. This is not secure.
+> 此 docker 教程与 docker 镜像由[Chasing66](https://github.com/Chasing66)提供
 
-To enable HTTPS, choose 面板设置 (Panel settings).
+1. 安装docker
 
-You will need to specify your certificate and key.
+```shell
+curl -fsSL https://get.docker.com | sh
+```
 
-面板证书公钥文件路径
-填写一个 '/' 开头的绝对路径，重启面板生效
-Panel certificate public key file path
-Fill in an absolute path starting with'/', restart the panel to take effect
-Fill in /root/cert.crt.
+2. 安装x-ui
 
-面板证书密钥文件路径
-填写一个 '/' 开头的绝对路径，重启面板生效
-Panel certificate key file path
-Fill in an absolute path starting with'/', restart the panel to take effect 
-Fill in /root/private.key.
+```shell
+mkdir x-ui && cd x-ui
+docker run -itd --network=host \
+    -v $PWD/db/:/etc/x-ui/ \
+    -v $PWD/cert/:/root/cert/ \
+    --name x-ui --restart=unless-stopped \
+    enwaiax/x-ui:latest
+```
 
-Specifying certificate and key in X-UI panel settings
+> Build 自己的镜像
 
-Save these options.
+```shell
+docker build -t x-ui .
+```
 
-Now in your SSH session issue the command:
+## SSL证书申请
 
-x-ui restart
-Now you can reach the panel using HTTPS. For example:
+> 此功能与教程由[FranzKafkaYu](https://github.com/FranzKafkaYu)提供
 
-https://host.mydomain.com:54321
-HTTPS login to X-UI panel
+脚本内置SSL证书申请功能，使用该脚本申请证书，需满足以下条件:
 
-Change Admin Password
-The default admin user name admin and password admin are the same for all installations. This is not secure. Input the old values of admin and admin, and choose new, unique values:
+- 知晓Cloudflare 注册邮箱
+- 知晓Cloudflare Global API Key
+- 域名已通过cloudflare进行解析到当前服务器
 
-Chinese	English
-原用户名	Original user name
-原密码	Old password
-新用户名	New user name
-新密码	New password
-X-UI panel change user name and password
+获取Cloudflare Global API Key的方法:
+    ![](media/bda84fbc2ede834deaba1c173a932223.png)
+    ![](media/d13ffd6a73f938d1037d0708e31433bf.png)
 
-Save the new values.
+使用时只需输入 `域名`, `邮箱`, `API KEY`即可，示意图如下：
+        ![](media/2022-04-04_141259.png)
 
-Sign out, then sign in again with the new user name and password.
+注意事项:
 
-HTTPS login with new user name and password
+- 该脚本使用DNS API进行证书申请
+- 默认使用Let'sEncrypt作为CA方
+- 证书安装目录为/root/cert目录
+- 本脚本申请证书均为泛域名证书
 
-Add VLESS+XTLS Xray User
-We are going to add an inbound user account using VLESS and Xray. VLESS is an an updated version of the older Vmess protocol. After several developers found flaws in Vmess protocol and showed that the Vmess protocol can be detected by deep packet inspection or DPI, VLESS was developed. (Note that it is plain Vmess that can be detected; Vmess+WS+TLS is still secure and supports the use of a CDN.) Xray core was developed as an alternative to the older V2Ray core. According to the Xray developers, Xray is more stable, better for UDP gaming, and 30% faster than V2Ray. XTLS speeds up TLS by reducing double-encryption.
+## Tg机器人使用（开发中，暂不可使用）
 
-On the side menu, select 入站列表 (Inbound list).
+> 此功能与教程由[FranzKafkaYu](https://github.com/FranzKafkaYu)提供
 
-Click the plus sign to add a new inbound user.
+X-UI支持通过Tg机器人实现每日流量通知，面板登录提醒等功能，使用Tg机器人，需要自行申请
+具体申请教程可以参考[博客链接](https://coderfan.net/how-to-use-telegram-bot-to-alarm-you-when-someone-login-into-your-vps.html)
+使用说明:在面板后台设置机器人相关参数，具体包括
 
-The 添加入站 (Add inbound) box appears.
+- Tg机器人Token
+- Tg机器人ChatId
+- Tg机器人周期运行时间，采用crontab语法  
 
-Enter fields as follows.
+参考语法：
+- 30 * * * * * //每一分的第30s进行通知
+- @hourly      //每小时通知
+- @daily       //每天通知（凌晨零点整）
+- @every 8h    //每8小时通知  
 
-Field	Contents
-Remark	Put a unique and meaningful description
-Enable	On
-Protocol	vless
-监听 IP Listening IP	Leave blank
-端口 Port	443
-总流量(GB) Total bandwidth (GB)	0 means unlimited
-到期时间 Expiry date	Blank
-Id	Leave the generated UUID as is
-Flow	xtls-rprx-direct
-Fallbacks	None
-传输 Transmission	tcp
-HTTP 伪装 masquerading	Off
-TLS	Off
-XTLS	On
-域名 Domain name	Put your host name, e.g. host.mydomain.com
-公钥文件路径 Public key file path	/root/cert.crt
-密钥文件路径 Key file path	/root/private.key
-Sniffing	On
-Adding a new VLESS+XTLS user
+TG通知内容：
+- 节点流量使用
+- 面板登录提醒
+- 节点到期提醒
+- 流量预警提醒  
 
-Save the new user.
+更多功能规划中...
+## 建议系统
 
-Click the 操作 (operating) button at the start of its row to display the QR code for the new user.
+- CentOS 7+
+- Ubuntu 16+
+- Debian 8+
 
-Displaying QR code in X-UI panel
+# 常见问题
 
-Client
-Clients are available for Android, iOS, Windows, macOS, and Linux. Examples are v2rayNG, Shadowrocket, and Qv2ray.
+## 从 v2-ui 迁移
 
-Add the profile in the QR code to your client.
+首先在安装了 v2-ui 的服务器上安装最新版 x-ui，然后使用以下命令进行迁移，将迁移本机 v2-ui 的 `所有 inbound 账号数据`至 x-ui，`面板设置和用户名密码不会迁移`
 
-Example of Qv2ray client
+> 迁移成功后请 `关闭 v2-ui`并且 `重启 x-ui`，否则 v2-ui 的 inbound 会与 x-ui 的 inbound 会产生 `端口冲突`
 
-You can check that your connection is working by opening a browser and going to https://whatismyipaddress.com.
+```
+x-ui v2-ui
+```
 
-whatismyipaddress.com
+## issue 关闭
+
+各种小白问题看得血压很高
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/vaxilu/x-ui.svg)](https://starchart.cc/vaxilu/x-ui)
